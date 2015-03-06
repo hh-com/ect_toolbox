@@ -2,9 +2,9 @@
 
 /**
  * 
- * @package ect_contentelements
- * Copyright (C) 2014 Harald Huber
- * http://www.harald-huber.com
+ * @package ect_toolbox
+ * Copyright (C) 2015 Harald Huber
+ * http://www.easy-contao-themes.com
  *
 */
 
@@ -16,8 +16,8 @@ class ContentIconHeadlineText extends \ContentElement
 
 	protected function compile()
 	{
-		# Icon Default & Frontend CSS 
-		$GLOBALS['TL_CSS'][] = 'system/modules/ect_contentelements/assets/css/fontIcon.css||static';
+		# Icon Default & Frontend CSS
+		$GLOBALS['TL_CSS'][] = 'system/modules/ect_toolbox/assets/css/fontIcon.css';
     
 		$iconClass = 'fas_'.$this->id;
 			
@@ -54,18 +54,10 @@ class ContentIconHeadlineText extends \ContentElement
 				$this->Template->target = ' onclick="return !window.open(this.href)" ';
 			}
 		}		
-		#Default is defined in CSS
-		$iconCss = 
-		'
-		<style>
-		.'.$iconClass.':before {
-			content: "\\'.$this->iconSelect.'";
-			color: #000;
-			font-size: '.$this->iconSize.'%;
-			line-height: 1em;
-		}
-		</style>
-		';
+		/*
+                 * Default is defined in CSS 
+                 */
+$iconCss = '<style>.'.$iconClass.':before {content: "\\'.$this->iconSelect.'"; color: #000; font-size: '.$this->iconSize.'%; line-height: 1em;}</style>';
 		
 		if(TL_MODE == 'BE')
 			$GLOBALS['TL_MOOTOOLS'][] = $iconCss;

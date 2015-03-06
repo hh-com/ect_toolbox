@@ -2,13 +2,13 @@
 
 /**
  * 
- * @package ect_contentelements
+ * @package ect_toolbox
  * Copyright (C) 2015 Harald Huber
  * http://www.harald-huber.com
  *
-*/
+ */
 
-/*Create CE for Schema.org Data (ALPHA)*/
+/* Create CE for Schema.org Data */
 $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][] = "schemaOrgType";
 
 $GLOBALS['TL_DCA']['tl_content']['palettes']['SchemaOrg'] = '{type_legend},type,headline;{schema_legend},schemaOrgType;{reference_legend:hide},schemaOrgItemRef;{protected_legend:hide},protected;{expert_legend:hide},guests,invisible,cssID,space';
@@ -36,13 +36,13 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['schemaOrgType'] = array
 );
 $GLOBALS['TL_DCA']['tl_content']['fields']['schemaOrg_htmlContainer'] = array
 (
-	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['schemaOrg_htmlContainer'],
-		'exclude'                 => true,
-		'search'                  => true,
-		'inputType'               => 'textarea',
-		'eval'                    => array('mandatory'=>false, 'allowHtml'=>true, 'class'=>'monospace', 'rte'=>'ace|html', 'helpwizard'=>true),
-		'explanation'             => 'insertTags',
-		'sql'                     => "mediumtext NULL"
+    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['schemaOrg_htmlContainer'],
+    'exclude'                 => true,
+    'search'                  => true,
+    'inputType'               => 'textarea',
+    'eval'                    => array('mandatory'=>false, 'allowHtml'=>true, 'class'=>'monospace', 'rte'=>'ace|html', 'helpwizard'=>true),
+    'explanation'             => 'insertTags',
+    'sql'                     => "mediumtext NULL"
 );
 $GLOBALS['TL_DCA']['tl_content']['fields']['schemaOrgTypeOfOrganisation'] = array
 (
@@ -308,12 +308,255 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['iconShow'] = array
 	'sql'                     => "char(1) NOT NULL default ''"
 );
 
-class tl_content_ect_ext extends Backend
-{	
-	public function changeLangText4Schema($varValue, DataContainer $dc)
+/* Add Responsive Features */
+if (Input::get('do') == 'article')
+foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $key=>$value)
+{
+	// don't add {contentWidth_legend},selectContentWidth,addBorder,addBottonLine,forceNewRow; to the __selector__, sliderStop, html...
+	if (
+                $key != '__selector__' && 
+                $key != 'sliderStop' && 
+                $key != 'accordionStop' && 
+               # $key != 'html' && 
+                $key != 'ECTStripline')
 	{
-		return $varValue;
+		$GLOBALS['TL_DCA']['tl_content']['palettes'][$key] = str_replace(',type', ',type;{contentWidth_legend},selectContentWidth,addBorder,addBottonLine,forceNewRow;', $GLOBALS['TL_DCA']['tl_content']['palettes'][$key]);
 	}
+}
+			
+$GLOBALS['TL_DCA']['tl_content']['fields']['selectContentWidth'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['selectContentWidth'],
+	'exclude'                 => true,
+	'inputType'               => 'select',
+	'options'                 => array(12,11,10,9,8,7,6,5,4,3,2,1), 
+	'reference'               => &$GLOBALS['TL_LANG']['tl_content']['selectContentWidthOption'],
+	'eval'                    => array('mandatory' => true, 'helpwizard' => true),
+        'explanation'             => 'selectContentWidthExplanation',
+	'sql'                     => "smallint(5) unsigned NOT NULL default '12'"
+);
+$GLOBALS['TL_DCA']['tl_content']['fields']['addBorder'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['addBorder'],
+	'exclude'                 => true,
+	'inputType'               => 'checkbox',
+	'eval'                    => array('tl_class'=>'w50'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+$GLOBALS['TL_DCA']['tl_content']['fields']['addBottonLine'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['addBottonLine'],
+	'exclude'                 => true,
+	'inputType'               => 'checkbox',
+	'eval'                    => array('tl_class'=>'w50'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+$GLOBALS['TL_DCA']['tl_content']['fields']['forceNewRow'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['forceNewRow'],
+	'exclude'                 => true,
+	'inputType'               => 'checkbox',
+	'eval'                    => array('tl_class'=>'w50'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+
+/* 
+ * Hidden field for element ROW
+ * This field contains either row_start or row_end
+ */
+$GLOBALS['TL_DCA']['tl_content']['config']['onsubmit_callback'][] = array('tl_content_ect_ext','addRowClass');
+# rebuild addRow on drag/drop and cut
+$GLOBALS['TL_DCA']['tl_content']['config']['oncut_callback'][] = array('tl_content_ect_ext','addRowClass');
+# rebuild addRow when delete element
+$GLOBALS['TL_DCA']['tl_content']['config']['ondelete_callback'][] = array('tl_content_ect_ext','addRowClass');
+
+$GLOBALS['TL_DCA']['tl_content']['list']['operations']['toggle']['button_callback'] = array('tl_content_ect_ext','toggleIcon');
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['responsiveRow'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['responsiveRow'],
+	'exclude'                 => true,
+	'search'                  => true,
+	'inputType'               => 'text',
+	'eval'                    => array('maxlength'=>255, 'tl_class'=>''),
+	'sql'                     => "varchar(255) NOT NULL default ''"
+);
+
+class tl_content_ect_ext extends tl_content
+{	
+    
+    
+	#public function changeLangText4Schema($varValue, DataContainer $dc)
+	#{
+	#	return $varValue;
+	#}
+    
+        public function addRowClass(DataContainer $dc)
+	{
+             # $dc->activeRecord->pid doesnt work with drag & drop
+            $article = $this->Database->prepare("SELECT pid FROM tl_content WHERE id=?")
+                              ->limit(1)
+                              ->execute(\Input::get('id'));
+            
+            $this->prepareStartAndStopRow($article->pid);
+        }
+        /*
+         * prepare to add row for width of 100%
+         */
+        public function prepareStartAndStopRow($pid)
+	{
+                   
+            $this->log('addRowClass called.. '.$pid, __METHOD__, TL_ERROR);
+            $arrElements = array();
+            $objContents = Contao\ContentModel::findPublishedByPidAndTable($pid, 'tl_article', array('order')); 
+
+            if ($objContents !== null)  
+            {
+#var_dump($objContents);
+                /*
+                 * For a better overview we use several arrays
+                 * 
+                 * Generate simple Array with all CTE's from current article
+                 * $objContents->prev cause allowed memory size error
+                 */
+                while ($objContents->next()) 
+                {
+                    $arrElements[] = array(
+                       'id' => $objContents->id,
+                       'type' => $objContents->type,
+                       'selectContentWidth' => (int)$objContents->selectContentWidth,
+                       'responsiveRow' => "", /* must be clear */
+                       'forceNewRow' => $objContents->forceNewRow
+                    );     
+                }
+                
+                /* open first and close last cte - sometimes twice at last element */
+                #$arrElements[count($arrElements)-1]['responsiveRow'] = " rowclose";
+
+                /* 
+                 * remove all elements inside a wrapper and the wrapper_end (for better calculation)
+                 */
+                foreach ($arrElements AS $key => $value)
+                {
+                    if ( strpos ( $value['type'], 'Stop' ) !== FALSE )
+                    {
+                       $isInsideWrapper = false;
+                       $value['openerID'] = $openerID;
+                       $arrWithoutInner[] = $value; 
+                       continue;
+                    }
+
+                    if ( $isInsideWrapper)
+                        continue;
+                    
+                    if ( (strpos ( $value['type'], 'Start' ) !== FALSE ) )
+                    {
+                        $isInsideWrapper = true;
+                        $openerID = $value['id'];
+                        $setEndWidth = $value['selectContentWidth'];
+                    }
+                    $arrWithoutInner[] = $value; 
+                    $arrWithoutInnerAndStopElements[] = $value; 
+                }
+                
+                # var_dump($arrWithoutInnerAndStopElements);
+                /*
+                 * Calculate row-Start and row-End
+                 * ( wrapper-end is not included in calculation ($arrWithoutInnerElementsWithoutEnd) )
+                 */
+                $widthUntil = 0; 
+                foreach ($arrWithoutInnerAndStopElements AS $key => $value)
+                {
+                    # start a row
+                    if( $widthUntil == 0 )
+                    {
+                            $value['responsiveRow'] .= " rowopen ";
+                    }
+                    
+                    # count all widths in current row
+                    $widthUntil += $value['selectContentWidth'];
+                    $value['widthUntil'] = $widthUntil;
+
+
+                    # close the row widthUntil to width or foreNewRow
+                    if  (
+                            $widthUntil >= 12
+                            || ( $widthUntil+ $arrWithoutInnerAndStopElements[$key+1]['selectContentWidth'] > 12 )
+                            || $arrWithoutInnerAndStopElements[$key+1]['forceNewRow'] == 1
+                        )
+                    {
+                            $widthUntil = 0;
+                            $value['responsiveRow'] .= " rowclose ";
+                    }
+
+                    $arrElementsPrepared[$value['id']] = $value;
+                }
+   
+                /*
+                 * Add responsiveRow to elements and prepare wrapper_end
+                 */
+                foreach ($arrWithoutInner AS $key => $value)
+                {
+                  
+                    $value['responsiveRow'] = $arrElementsPrepared[$value['id']]['responsiveRow'];
+                     
+                    if ( strpos ( $value['type'], 'Start' ) !== FALSE )
+                    {
+                        /* 
+                         * if a wrapper_start element contains rowclose
+                         * remove it an add it at wrapper_stop (openerID)
+                         */
+                         if ( strpos ( $value['responsiveRow'], 'rowclose' ) !== FALSE )
+                         {
+                            $value['responsiveRow'] = str_replace ('rowclose', '', $value['responsiveRow']);
+                            $openerID = $value['id'];
+                         }
+                    }
+                    
+                     if ( strpos ( $value['type'], 'Stop' ) !== FALSE )
+                    {
+                        # add rowclose if this wrapper_stop has a openerID 
+                        if ($openerID == $value['openerID'])
+                           $value['responsiveRow'] .= " rowclose ";
+                    }
+                   $lastElementId = $value['id'];
+                   $arrElementsFinished[$value['id']] = $value;
+                }
+                
+            
+                $arrElementsFinished[$lastElementId]['responsiveRow'] .= "rowclose";
+                
+                #echo "<pre>";
+                #var_dump($arrElementsFinished);
+                /* set pointer to first object */          
+                $objContents->reset();
+                while ($objContents->next()) 
+                {
+                   # var_dump($objContents->id . ' -- ' . $arrElementsFinished[$objContents->id]['responsiveRow']);
+                    $objContents->responsiveRow = $arrElementsFinished[$objContents->id]['responsiveRow'];
+                    $objContents->save();
+                }
+            }
+            
+            return $varValue;
+
+	}
+        /*
+         * Arrange start and stop row new after change visibility
+         */
+        public function toggleVisibility( $intId, $blnVisible, DataContainer $dc=null )
+        {
+            $article = $this->Database->prepare("SELECT pid FROM tl_content WHERE id=?")
+                             ->limit(1)
+                             ->execute($intId);
+            parent::toggleVisibility( $intId, $blnVisible, $dc );
+            
+            $this->prepareStartAndStopRow($article->pid);
+        }
+         
+        /**
+         * Change label and description
+         */
 	public function changeLangText($varValue, DataContainer $dc)
 	{
 		if($dc->activeRecord->type == "IconHeadlineText")
@@ -322,6 +565,10 @@ class tl_content_ect_ext extends Backend
 		}
 		return $varValue;
 	}
+        
+         /**
+         * Set mandatory to false
+         */
 	public function removeTextMandatory($varValue, DataContainer $dc)
 	{
 		if($dc->activeRecord->type == "IconHeadlineText")

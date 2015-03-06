@@ -79,7 +79,8 @@
             <?php endif; ?>
     </div>
     
-    <?php if ($this->ect_siteresponsive): ?>
+    <?php #if ($this->ect_siteresponsive): ?>
+    <?php if (true): ?>
         <a id="responsive-menu-button" href="various-content.html#sidr-main"></a>
     <?php endif; ?>
 

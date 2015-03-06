@@ -1,0 +1,30 @@
+<?php
+	/*
+	 * SuperFish Slow-Down Menu
+	 * http://users.tpg.com.au/j_birch/plugins/superfish/
+	 * https://github.com/joeldbirch/superfish/
+	 * Licensed under the MIT license.
+	 * 
+	 * @package ect_mobilenavigation
+	 * Copyright (C) 2014 Harald Huber 
+	 * http://www.harald-huber.com 
+	 *
+	*/
+	
+	$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/ect_toolbox/assets/lib/jquery/jQuery.hoverIntent.js';
+        $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/ect_toolbox/assets/lib/jquery/jQuery.superfish.js';
+       
+?>
+<script type="text/javascript">
+  /* <![CDATA[ */
+  (function($) {
+    $(document).ready(function() {
+		jQuery('#header .mod_navigation ul.level_1').superfish({
+		delay: 2100,
+		/*animation:   {opacity:'show',height:'show'},*/
+		speed: 'fast'
+		});
+    });
+  })(jQuery);
+  /* ]]> */
+</script>

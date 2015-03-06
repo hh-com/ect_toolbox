@@ -1,0 +1,33 @@
+<?php
+	/*
+	 * Sidr
+	 * https://github.com/artberri/sidr
+	 * Copyright (c) 2013 Alberto Varela
+	 * Licensed under the MIT license.
+	 * Sidr is a jQuery plugin for creating side menus and the easiest way for doing your menu responsive. For a further description, documentation and others visit:
+	 *
+	 * @package ect_toolbox
+	 * Copyright (C) 2015 Harald Huber
+	 * http://www.easy-contao-themes.com
+	 *
+	*/
+	
+$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/ect_toolbox/assets/lib/jquery/jQuery.sidr.min.js';
+$GLOBALS['TL_CSS'][] =        'system/modules/ect_toolbox/assets/lib/jquery/jQuery.sidr.dark.css';
+#$GLOBALS['TL_CSS'][] =       'system/modules/ect_toolbox/assets/lib/jquery/jQuery.sidr.light.css';
+	
+?>
+<span id="closeBtn"><a id="closeOff">Close</a></span>
+<script>
+  /* <![CDATA[ */
+	$('#responsive-menu-button').sidr({
+		name: 'sidr-main',
+		source: '#closeBtn, .mod_form.search, #mainNav',
+		displace : false
+	});	
+	$( "#sidr-id-closeOff" ).click(function() {
+		$.sidr('close', 'sidr-main');
+		 e.stopPropagation();
+	});
+  /* ]]> */
+</script>

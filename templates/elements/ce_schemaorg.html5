@@ -58,8 +58,7 @@
 		<?php echo ($this->data['vatID']['pre']) ?> <span <?php if ($this->data['vatID']['referid']) echo $this->data['vatID']['referid']; ?> itemprop="vatID">	<?php echo ($this->data['vatID']['value']) ?></span><br><?php endif; ?>
 	<?php if ($this->data['birthDate']): ?>
 		<?php echo $GLOBALS['TL_LANG']['tl_content']['schemaOrg_bithday'] ?><meta itemprop="birthDate" content="<?php echo $this->parseDate("Y-m-d", $this->data['birthDate']['value']) ?>">
-			<?php echo $this->parseDate("d. F Y", $this->data['birthDate']['value']) ?><br><?php endif; ?>	
-			
+			<?php echo $this->parseDate("d. F Y", $this->data['birthDate']['value']) ?><br><?php endif; ?>
 	<?php if ($this->data['image']): ?>
 		<img <?php if ($this->data['image']['referid']) echo $this->data['image']['referid']; ?> <?php if ($this->data['image']['size']) echo $this->data['image']['size']; ?> itemprop="<?php echo $this->imageProp; ?>" src="<?php echo ($this->data['image']['value']); ?>" alt="" /><br><?php endif; ?>
 

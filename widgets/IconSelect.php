@@ -23,7 +23,7 @@ class IconSelect extends \Widget
 			$this->varValue = "000";
 
 		# Font AWESOME Start
-		$daten = json_decode(file_get_contents(TL_ROOT."/system/modules/ect_contentelements/assets/fontawesome/icons.json"), true);
+		$daten = json_decode(file_get_contents(TL_ROOT."/system/modules/ect_toolbox/assets/lib/fontawesome/icons.json"), true);
 		foreach($daten['icons'] AS $key => $value)
 		{
 			$wert = $value['unicode'];
@@ -56,9 +56,9 @@ class IconSelect extends \Widget
 		# Font AWESOME END
                 
                 # Backend: Icon Font Default Layout & Frontend CSS 
-		$GLOBALS['TL_CSS'][] = 'system/modules/ect_contentelements/assets/css/fontIcon_Backend.css';
-                $GLOBALS['TL_CSS'][] = 'system/modules/ect_contentelements/assets/fontawesome/css/font-awesome.min.css';
-                $GLOBALS['TL_CSS'][] = 'system/modules/ect_contentelements/assets/fontawesome/css/font-awesome-social.min.css';
+		$GLOBALS['TL_CSS'][] = 'system/modules/ect_toolbox/assets/css/fontIcon_Backend.css';
+                $GLOBALS['TL_CSS'][] = 'system/modules/ect_toolbox/assets/lib/fontawesome/css/font-awesome.min.css';
+                #$GLOBALS['TL_CSS'][] = 'system/modules/ect_toolbox/assets/lib/fontawesome/css/font-awesome-social.min.css';
 		$GLOBALS['TL_MOOTOOLS'][] = '<style>
 			'.$css.'
 		</style>';

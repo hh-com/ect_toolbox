@@ -1,7 +1,7 @@
-ect_contentelements
+ect_toolbox
 ===================
 
-Contentelements for Contao
+<b>Contentelements</b>
 
 Adds the following elements:
 
@@ -16,3 +16,26 @@ Adds the following elements:
 <li>Insert Social Media Buttons</li>
 <li>Insert own html code</li>
 </ul>
+
+<b>Mobile Navigation</b>
+
+Add the SuperFish Slow-Down Menu to Contao
+http://users.tpg.com.au/j_birch/plugins/superfish/
+https://github.com/joeldbirch/superfish/
+
+
+Add the mobile navigation Sidr to Contao (OFF CANVAS)
+https://github.com/artberri/sidr
+ 
+You need to create the Button as HTML Element or in a template.
+```html
+<a id="responsive-menu-button" href="{{env::request}}#sidr-main"></a>
+```
+
+<b>Responsive Behavior</b>
+
+Module generates CSS Class for responsive behavior.
+
+Adds: Width-Selection, Border-Selection, Bottom Line, Force New Row
+
+Special CSS needed...
